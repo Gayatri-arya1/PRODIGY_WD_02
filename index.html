@@ -1,32 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="style.css">
-        <title>Stopwatch</title> 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #056262;
+      margin: 0;
+      padding: 50px;
+      background-color: #045253;
+    }
+
+    .stopwatch {
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+
+    .buttons {
+      margin-bottom: 20px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .laps {
+      text-align: left;
+      margin-top: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .laps h3 {
+      margin: 0 0 10px;
+    }
+
+    .laps ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .laps ul li {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+  </style>
 </head>
-<body>
-     <div class="stopwatch">
-    <div class="timerDisplay">00 : 00 : 00</div>
-</div>
+<body><img src="clock.jpeg" alt="">
+  <div class="stopwatch" id="stopwatch">00:00:00</div>
+  <div class="buttons">
+    <button id="startButton">Start</button>
+    <button id="stopButton">Stop</button>
+    <button id="restartButton">Restart</button>
+    <button id="lapButton">Lap</button>
+  </div>
+  <div class="laps" id="laps">
+    <h3>Laps</h3>
+    <ul></ul>
+  </div>
 
-<div class="buttons">
-    <button id="stopBtn" class="btn" 
-    style="--clr: red; ">stop</button>
-    <button id="startBtn" class="btn"
-    style="--clr:green">start</button>
-   
-   
-   
-    <button id="resetBtn" class="btn"
-    style="--clr:blue">reset</button>
-    <button id="lagBtn" class="btn"
-    style="--clr:yellow">lag</button>
-</div>
+  <script>
+    let timerInterval;
+    let elapsedTime = 0;
 
-<script src="script.js"></script>
+    const stopwatchEl = document.getElementById('stopwatch');
+    const lapsEl = document.getElementById('laps').querySelector('ul');
+
+    function formatTime(ms) {
+      const seconds = Math.floor(ms / 1000) % 60;
+      const minutes = Math.floor(ms / (60 * 1000)) % 60;
+      const hours = Math.floor(ms / (60 * 60 * 1000));
+
+      return `${hours.toString().padStart(2, '0')}:${minutes
+        .toString()
+        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function updateStopwatch() {
+      stopwatchEl.textContent = formatTime(elapsedTime);
+    }
+
+    document.getElementById('startButton').addEventListener('click', () => {
+      if (!timerInterval) {
+        const start = Date.now() - elapsedTime;
+        timerInterval = setInterval(() => {
+          elapsedTime = Date.now() - start;
+          updateStopwatch();
+        }, 100);
+      }
+    });
+
+    document.getElementById('stopButton').addEventListener('click', () => {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    });
+
+    document.getElementById('restartButton').addEventListener('click', () => {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      elapsedTime = 0;
+      updateStopwatch();
+      lapsEl.innerHTML = '';
+    });
+
+    document.getElementById('lapButton').addEventListener('click', () => {
+      const lapTime = formatTime(elapsedTime);
+      const lapItem = document.createElement('li');
+      lapItem.textContent = lapTime;
+      lapsEl.appendChild(lapItem);
+    });
+
+    updateStopwatch();
+  </script>
 </body>
-    </html>
-
+</html>
